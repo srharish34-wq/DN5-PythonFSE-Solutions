@@ -1,9 +1,3 @@
-# ============================================================
-# Hands-On 3 – Django REST Framework Views & ViewSets
-# courses/views.py
-# Cognizant DN5.0 | Harish Seetharaman Rama
-# ============================================================
-
 from django.http import HttpResponse
 from rest_framework import viewsets, status
 from rest_framework.decorators import action

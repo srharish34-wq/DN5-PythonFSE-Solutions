@@ -1,6 +1,3 @@
-# courses/views.py
-# Handles HTTP requests and returns responses
-
 from django.http import HttpResponse
 
 def hello_view(request):

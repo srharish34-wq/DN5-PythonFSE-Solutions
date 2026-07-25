@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Portal — Async JS | Harish Seetharaman Rama</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f4f6f9; color: #333; }
+    header { background: #1a237e; color: #fff; padding: 16px 32px; text-align: center; }
+    main { max-width: 1000px; margin: 0 auto; padding: 32px; }
+    h2 { color: #1a237e; margin-bottom: 20px; border-bottom: 2px solid #e8eaf6; padding-bottom: 8px; }
+    section { margin-bottom: 48px; }
+
+    .spinner {
+      text-align: center; padding: 32px; color: #1a237e; font-size: 1rem;
+    }
+    .spinner::after {
+      content: ''; display: inline-block;
+      width: 18px; height: 18px;
+      border: 3px solid #e8eaf6; border-top-color: #1a237e;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      margin-left: 8px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-box { background: #ffebee; border-left: 4px solid #c62828; padding: 16px 20px; border-radius: 4px; color: #c62828; display: none; }
+    .retry-btn { margin-top: 10px; padding: 8px 20px; background: #c62828; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+
+    .card { background: #fff; padding: 16px 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
+    .card h3 { color: #1a237e; margin-bottom: 6px; font-size: 1rem; }
+    .card p  { color: #666; font-size: 0.9rem; }
+
+    .course-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    footer { background: #1a237e; color: #fff; text-align: center; padding: 16px; }
+  </style>
+</head>
+<body>
+
+<header><h1>🎓 Student Portal — Async JavaScript</h1></header>
+
+<main>
+  <!-- Task 1: Courses with loading state -->
+  <section>
+    <h2>📚 Courses (Async Load with 1s delay)</h2>
+    <div id="courses-loading" class="spinner">Loading courses</div>
+    <div class="course-grid" id="courses-grid" style="display:none"></div>
+    <p id="courses-total" style="text-align:center;margin-top:12px;color:#1a237e;font-weight:bold;"></p>
+  </section>
+
+  <!-- Task 2: Notifications from Fetch API -->
+  <section>
+    <h2>🔔 Notifications (Fetch API)</h2>
+    <div id="notif-loading" class="spinner">Loading notifications</div>
+    <div id="error-box" class="error-box">
+      <strong>Failed to load notifications.</strong>
+      <p id="error-msg"></p>
+      <button class="retry-btn" onclick="loadNotifications()">🔄 Retry</button>
+    </div>
+    <div id="notifications-list"></div>
+  </section>
+
+  <!-- Task 3: Axios -->
+  <section>
+    <h2>⚡ Axios — User Posts (userId=1)</h2>
+    <div id="axios-loading" class="spinner" style="display:none">Loading via Axios</div>
+    <div id="axios-list"></div>
+  </section>
+</main>
+
+<footer><p>&copy; 2024 Student Portal — Cognizant DN5.0 | Harish Seetharaman Rama</p></footer>
+
+<script type="module">
+
+
+
+const localCourses = [
+  { id:1, name:'Data Structures & Algorithms', code:'CS101', credits:4, grade:'A' },
+  { id:2, name:'Database Management Systems',  code:'CS102', credits:3, grade:'B' },
+  { id:3, name:'Object Oriented Programming',  code:'CS103', credits:4, grade:'A' },
+  { id:4, name:'Web Development Fundamentals', code:'CS104', credits:3, grade:'B' },
+  { id:5, name:'Python Backend Frameworks',    code:'CS105', credits:4, grade:'A' },
+];
+
+
+
+async function fetchUser(id) {
+  try {
+    const res  = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`);
+    const user = await res.json();
+    console.log('User:', user.name);
+  } catch(err) { console.error('fetchUser error:', err); }
+}
+
+function fetchAllCourses() {
+  return new Promise(resolve => setTimeout(() => resolve(localCourses), 1000));
+}
+
+async function loadCourses() {
+  const loadingEl = document.getElementById('courses-loading');
+  const gridEl    = document.getElementById('courses-grid');
+  const totalEl   = document.getElementById('courses-total');
+
+  loadingEl.style.display = 'block';
+  gridEl.style.display    = 'none';
+
+  const courses = await fetchAllCourses();
+
+  loadingEl.style.display = 'none';
+  gridEl.style.display    = 'grid';
+  gridEl.innerHTML = courses.map(c => `
+    <div class="card">
+      <h3>${c.name}</h3>
+      <p>${c.code} | ${c.credits} Credits | Grade: ${c.grade}</p>
+    </div>`).join('');
+
+  const total = courses.reduce((s,c) => s+c.credits, 0);
+  totalEl.textContent = `Total Credits: ${total}`;
+}
+
+// Promise.all — fetch 2 users simultaneously
+async function fetchTwoUsers() {
+  const [u1, u2] = await Promise.all([
+    fetch('https://jsonplaceholder.typicode.com/users/1').then(r=>r.json()),
+    fetch('https://jsonplaceholder.typicode.com/users/2').then(r=>r.json()),
+  ]);
+  console.log('Promise.all:', u1.name, '&', u2.name);
+}
+
+// ── TASK 2: apiFetch with error handling ─────────────────
+
+async function apiFetch(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+  return res.json();
+}
+
+window.loadNotifications = async function() {
+  const loadingEl = document.getElementById('notif-loading');
+  const errorBox  = document.getElementById('error-box');
+  const errorMsg  = document.getElementById('error-msg');
+  const listEl    = document.getElementById('notifications-list');
+
+  loadingEl.style.display = 'block';
+  errorBox.style.display  = 'none';
+  listEl.innerHTML        = '';
+
+  try {
+    const posts = await apiFetch('https://jsonplaceholder.typicode.com/posts?_limit=5');
+    loadingEl.style.display = 'none';
+    listEl.innerHTML = posts.map(p => `
+      <div class="card"><h3>📣 ${p.title}</h3><p>${p.body}</p></div>`).join('');
+  } catch(err) {
+    loadingEl.style.display = 'none';
+    errorBox.style.display  = 'block';
+    errorMsg.textContent    = err.message;
+  }
+}
+
+
+axios.interceptors.request.use(config => {
+  console.log(`[Axios] API call started: ${config.url}`);
+  return config;
+});
+
+async function loadAxiosPosts() {
+  const loadingEl = document.getElementById('axios-loading');
+  const listEl    = document.getElementById('axios-list');
+  loadingEl.style.display = 'block';
+  try {
+    const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+      params: { userId: 1, _limit: 3 }
+    });
+    loadingEl.style.display = 'none';
+    listEl.innerHTML = response.data.map(p => `
+      <div class="card"><h3>📝 ${p.title}</h3><p>${p.body}</p></div>`).join('');
+  } catch(err) {
+    loadingEl.style.display = 'none';
+    listEl.innerHTML = `<p style="color:red">Axios error: ${err.message}</p>`;
+  }
+}
+
+// Run all
+loadCourses();
+loadNotifications();
+loadAxiosPosts();
+fetchUser(1);
+fetchTwoUsers();
+</script>
+</body>
+</html>

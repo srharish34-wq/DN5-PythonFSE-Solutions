@@ -1,8 +1,3 @@
-# ============================================================
-# Hands-On 2 – Django Admin Interface
-# courses/admin.py
-# Cognizant DN5.0 | Harish Seetharaman Rama
-# ============================================================
 
 from django.contrib import admin
 from .models import Department, Course, Student, Enrollment
@@ -35,14 +30,3 @@ class EnrollmentAdmin(admin.ModelAdmin):
     search_fields = ['student__first_name', 'student__last_name', 'course__name']
 
 
-# ============================================================
-# SETUP COMMANDS (run in terminal):
-# python manage.py makemigrations
-# python manage.py migrate
-# python manage.py createsuperuser
-#   Username: admin
-#   Email: admin@college.edu
-#   Password: Admin@123
-# python manage.py runserver
-# Then visit: http://127.0.0.1:8000/admin/
-# ============================================================

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Portal — DN5.0 | Harish Seetharaman Rama</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="site-name">🎓 Student Portal</div>
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#courses">Courses</a></li>
+        <li><a href="#profile">Profile</a></li>
+        <li><a href="#grades">Grades</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="hero">
+      <h1>Welcome to the Student Portal</h1>
+      <p>Your one-stop platform to manage courses, track grades, and stay connected.</p>
+      <button onclick="document.getElementById('courses').scrollIntoView({behavior:'smooth'})">
+        Explore Courses
+      </button>
+    </section>
+
+    <section id="courses">
+      <h2>Available Courses</h2>
+      <div class="course-grid">
+        <article class="course-card">
+          <h3>Data Structures &amp; Algorithms</h3>
+          <p>Learn arrays, linked lists, sorting, searching and time complexity analysis.</p>
+          <span class="credits">4 Credits</span>
+        </article>
+        <article class="course-card">
+          <h3>Database Management Systems</h3>
+          <p>Master SQL, NoSQL, normalization, indexing and database design principles.</p>
+          <span class="credits">3 Credits</span>
+        </article>
+        <article class="course-card">
+          <h3>Object Oriented Programming</h3>
+          <p>Understand classes, objects, inheritance, polymorphism and encapsulation.</p>
+          <span class="credits">4 Credits</span>
+        </article>
+        <article class="course-card">
+          <h3>Web Development Fundamentals</h3>
+          <p>Build responsive web pages using HTML5, CSS3 and modern JavaScript.</p>
+          <span class="credits">3 Credits</span>
+        </article>
+        <article class="course-card">
+          <h3>Python Backend Frameworks</h3>
+          <p>Build REST APIs using Django, Flask and FastAPI with database integration.</p>
+          <span class="credits">4 Credits</span>
+        </article>
+      </div>
+      <p id="total-credits"></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 Student Portal — Cognizant DN5.0 | Harish Seetharaman Rama</p>
+  </footer>
+</body>
+</html>

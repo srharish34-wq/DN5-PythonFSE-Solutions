@@ -1,9 +1,3 @@
-# ============================================================
-# Hands-On 3 – Django REST Views, URL Routing & DRF
-# courses/serializers.py
-# Cognizant DN5.0 | Harish Seetharaman Rama
-# ============================================================
-
 from rest_framework import serializers
 from .models import Department, Course, Student, Enrollment
 

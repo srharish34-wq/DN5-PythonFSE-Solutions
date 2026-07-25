@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Portal — Accessible | Harish Seetharaman Rama</title>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      /* AFTER FIX: #333 on #f4f6f9 = 8.3:1 contrast ratio ✅ */
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* ── Skip link — first interactive element for screen readers ── */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: #1a237e;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 0 0 4px 0;
+      z-index: 999;
+      text-decoration: none;
+    }
+    .skip-link:focus { top: 0; }
+
+    header {
+      background: #1a237e;
+      color: #fff;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name { font-size: 1.4rem; font-weight: bold; }
+
+    /* ── Focus indicator — NEVER hide outline without alternative ── */
+    a:focus, button:focus, input:focus, [tabindex]:focus {
+      outline: 3px solid #ff9800;
+      outline-offset: 2px;
+    }
+
+    nav ul { list-style: none; display: flex; gap: 20px; }
+    nav a  { color: #fff; text-decoration: none; padding: 4px 8px; border-radius: 4px; }
+    nav a[aria-current="page"] { background: rgba(255,255,255,0.3); }
+    nav a:hover { background: rgba(255,255,255,0.2); }
+
+    #hero {
+      background: linear-gradient(135deg, #1a237e, #283593);
+      color: #fff;
+      text-align: center;
+      padding: 60px 32px;
+      min-height: 40vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #hero h1 {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      margin-bottom: 12px;
+    }
+    #hero p { margin-bottom: 24px; opacity: 0.9; }
+    #hero button {
+      padding: 12px 32px;
+      border: 2px solid #fff;
+      border-radius: 6px;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    #hero button:hover { background: #fff; color: #1a237e; }
+
+    #courses { padding: 40px 32px; max-width: 1200px; margin: 0 auto; }
+    #courses h2 { color: #1a237e; font-size: 2rem; text-align: center; margin-bottom: 24px; }
+
+    /* Search area */
+    .search-area { margin-bottom: 24px; }
+    label[for="search-courses"] {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #1a237e;
+    }
+    #search-courses {
+      padding: 10px 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    /* aria-live region — screen reader announces count changes */
+    #results-count {
+      margin-bottom: 16px;
+      color: #555;
+      font-size: 0.9rem;
+    }
+
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .course-card {
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    /* Visible focus style for keyboard users */
+    .course-card:focus { outline: 3px solid #1a237e; outline-offset: 2px; }
+    .course-card:hover { transform: translateY(-4px); }
+    .course-card h3 { color: #1a237e; margin-bottom: 8px; }
+    .course-card p  { color: #555; font-size: 0.9rem; margin-bottom: 12px; }
+
+    .credits {
+      background: #e8eaf6; color: #1a237e;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 0.8rem; font-weight: bold;
+    }
+
+    footer {
+      background: #1a237e; color: #fff;
+      text-align: center; padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Skip navigation link — first element, helps keyboard/screen reader users -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header>
+    <div class="site-name">🎓 Student Portal</div>
+    <!-- aria-label on nav identifies its purpose for screen readers -->
+    <nav aria-label="Main navigation">
+      <ul>
+        <!-- aria-current="page" marks the active link -->
+        <li><a href="#hero"    aria-current="page">Home</a></li>
+        <li><a href="#courses">Courses</a></li>
+        <li><a href="#profile">Profile</a></li>
+        <li><a href="#grades">Grades</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <section id="hero" aria-labelledby="hero-heading">
+      <h1 id="hero-heading">Welcome to the Student Portal</h1>
+      <p>Your one-stop platform to manage courses, track grades, and stay connected.</p>
+      <button onclick="document.getElementById('courses').scrollIntoView({behavior:'smooth'})">
+        Explore Courses
+      </button>
+    </section>
+
+    <section id="courses" aria-labelledby="courses-heading">
+      <h2 id="courses-heading">Available Courses</h2>
+
+      <!-- Label properly associated with input via for/id -->
+      <div class="search-area">
+        <label for="search-courses">Search Courses:</label>
+        <input
+          type="search"
+          id="search-courses"
+          placeholder="Type to filter courses..."
+          aria-label="Search courses by name"
+        />
+      </div>
+
+      <!-- aria-live="polite" — screen reader announces when count changes -->
+      <!-- role="status" — identifies this as a status message region -->
+      <p id="results-count" role="status" aria-live="polite">
+        Showing 5 courses
+      </p>
+
+      <div class="course-grid" id="course-grid">
+
+        <!-- tabindex="0" makes cards focusable via keyboard Tab -->
+        <!-- role="button" signals interactivity to screen readers -->
+        <article
+          class="course-card"
+          tabindex="0"
+          role="button"
+          aria-label="Data Structures and Algorithms, 4 Credits"
+          onclick="selectCourse(this)"
+          onkeydown="if(event.key==='Enter'||event.key===' ') selectCourse(this)"
+        >
+          <h3>Data Structures & Algorithms</h3>
+          <!-- alt="" on decorative image — screen reader skips it -->
+          <img src="" alt="" style="display:none" />
+          <p>Arrays, linked lists, sorting, searching and time complexity.</p>
+          <span class="credits">4 Credits</span>
+        </article>
+
+        <article class="course-card" tabindex="0" role="button"
+          aria-label="Database Management Systems, 3 Credits"
+          onclick="selectCourse(this)"
+          onkeydown="if(event.key==='Enter'||event.key===' ') selectCourse(this)">
+          <h3>Database Management Systems</h3>
+          <p>SQL, NoSQL, normalization, indexing and database design.</p>
+          <span class="credits">3 Credits</span>
+        </article>
+
+        <article class="course-card" tabindex="0" role="button"
+          aria-label="Object Oriented Programming, 4 Credits"
+          onclick="selectCourse(this)"
+          onkeydown="if(event.key==='Enter'||event.key===' ') selectCourse(this)">
+          <h3>Object Oriented Programming</h3>
+          <p>Classes, objects, inheritance, polymorphism and encapsulation.</p>
+          <span class="credits">4 Credits</span>
+        </article>
+
+        <article class="course-card" tabindex="0" role="button"
+          aria-label="Web Development Fundamentals, 3 Credits"
+          onclick="selectCourse(this)"
+          onkeydown="if(event.key==='Enter'||event.key===' ') selectCourse(this)">
+          <h3>Web Development Fundamentals</h3>
+          <p>Build responsive web pages using HTML5, CSS3 and JavaScript.</p>
+          <span class="credits">3 Credits</span>
+        </article>
+
+        <article class="course-card" tabindex="0" role="button"
+          aria-label="Python Backend Frameworks, 4 Credits"
+          onclick="selectCourse(this)"
+          onkeydown="if(event.key==='Enter'||event.key===' ') selectCourse(this)">
+          <h3>Python Backend Frameworks</h3>
+          <p>REST APIs using Django, Flask and FastAPI.</p>
+          <span class="credits">4 Credits</span>
+        </article>
+
+      </div><!-- end .course-grid -->
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2024 Student Portal — Cognizant DN5.0 | Harish Seetharaman Rama</p>
+  </footer>
+
+  <script>
+    // Search — filter cards + update aria-live count
+    document.getElementById('search-courses').addEventListener('input', function() {
+      const term    = this.value.toLowerCase();
+      const cards   = document.querySelectorAll('.course-card');
+      let   visible = 0;
+
+      cards.forEach(card => {
+        const name = card.querySelector('h3').textContent.toLowerCase();
+        if (name.includes(term)) {
+          card.style.display = '';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Update aria-live region — screen reader announces this change
+      document.getElementById('results-count').textContent =
+        `Showing ${visible} course${visible !== 1 ? 's' : ''}`;
+    });
+
+    function selectCourse(card) {
+      const name = card.querySelector('h3').textContent;
+      alert(`Selected: ${name}`);
+    }
+  </script>
+
+</body>
+</html>

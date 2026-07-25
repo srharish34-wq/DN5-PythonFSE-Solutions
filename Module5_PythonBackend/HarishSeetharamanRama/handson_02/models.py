@@ -1,8 +1,4 @@
-# ============================================================
-# Hands-On 2 – Django Models, ORM & Admin Interface
-# courses/models.py
-# Cognizant DN5.0 | Harish Seetharaman Rama
-# ============================================================
+
 
 from django.db import models
 

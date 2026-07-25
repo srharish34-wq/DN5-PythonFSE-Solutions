@@ -1,14 +1,7 @@
--- ============================================================
--- Module 3 – Database Integration
--- Hands On 2: SQL Queries, Joins & Aggregations
--- Cognizant DN5.0 | Harish Seetharaman Rama
--- ============================================================
+
 
 USE college_db;
 
--- ============================================================
--- Task 1: Insert Sample Data
--- ============================================================
 
 INSERT INTO departments (dept_name, head_of_dept, budget) VALUES
 ('Computer Science', 'Dr. Ramesh Kumar',  850000.00),
@@ -59,9 +52,6 @@ UPDATE enrollments SET grade = 'B' WHERE student_id = 5 AND course_id = 1;
 -- Delete rows with no grade yet
 DELETE FROM enrollments WHERE grade IS NULL;
 
--- ============================================================
--- Task 2: Single Table Queries
--- ============================================================
 
 -- Students enrolled in 2022
 SELECT * FROM students WHERE enrollment_year = 2022 ORDER BY last_name;
@@ -79,10 +69,6 @@ SELECT * FROM students WHERE email LIKE '%@college.edu';
 SELECT enrollment_year, COUNT(*) AS total_students
 FROM students
 GROUP BY enrollment_year;
-
--- ============================================================
--- Task 3: Joins
--- ============================================================
 
 -- Student full name with their department
 SELECT
@@ -114,9 +100,6 @@ FROM courses c
 LEFT JOIN enrollments e ON c.course_id = e.course_id
 GROUP BY c.course_name;
 
--- ============================================================
--- Task 4: Aggregations
--- ============================================================
 
 -- Average professor salary per department
 SELECT
