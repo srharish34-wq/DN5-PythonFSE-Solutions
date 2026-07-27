@@ -19,9 +19,11 @@ from pages.input_form_page import InputFormPage
 
 # --- Step 55: Simple Form test refactored to POM ---
 def test_simple_form_submission(driver, base_url):
-    page = SimpleFormPage(driver)
-    page.navigate_to(base_url)
+    driver.get(base_url)
     driver.find_element(By.LINK_TEXT, "Simple Form Demo").click()
+
+    page = SimpleFormPage(driver)
+    page.wait_until_ready()  # let the page finish rendering before typing
 
     page.enter_message("Hello Selenium")
     page.click_submit()
@@ -35,11 +37,22 @@ def test_checkbox_demo(driver, base_url):
     driver.find_element(By.LINK_TEXT, "Checkbox Demo").click()
 
     page = CheckboxPage(driver)
-    page.check_option(1)
-    assert page.is_option_checked(1) is True
+    checkbox = page.get_checkbox(1)
 
-    page.uncheck_option(1)
-    assert page.is_option_checked(1) is False
+    # Don't assume the checkbox starts unchecked - some Selenium Playground
+    # checkboxes default to checked. Verify relative to its actual state.
+    initial_state = page.is_option_checked(checkbox)
+
+    if initial_state:
+        page.uncheck_option(checkbox)
+        assert page.is_option_checked(checkbox) is False
+        page.check_option(checkbox)
+        assert page.is_option_checked(checkbox) is True
+    else:
+        page.check_option(checkbox)
+        assert page.is_option_checked(checkbox) is True
+        page.uncheck_option(checkbox)
+        assert page.is_option_checked(checkbox) is False
 
 
 # --- Step 56: Dropdown test refactored to POM ---
@@ -62,12 +75,18 @@ def test_input_form_submit(driver, base_url):
     page.fill_form(
         name="Jane Doe",
         email="jane.doe@example.com",
-        phone="9876543210",
-        address="221B Baker Street",
+        password="SecurePass123",
+        company="Acme Corp",
+        website="https://example.com",
+        city="Chennai",
+        address1="221B Baker Street",
+        address2="Apt 4",
+        state="Tamil Nadu",
+        zip_code="600001",
     )
     page.submit_form()
 
-    assert "success" in page.get_success_message().lower()
+    assert "thanks for contacting us" in page.get_success_message().lower()
 
 
 # --- Step 59: maintenance benefit explanation ---

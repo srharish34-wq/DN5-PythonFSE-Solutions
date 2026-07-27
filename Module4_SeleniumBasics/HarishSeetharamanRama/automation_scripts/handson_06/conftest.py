@@ -24,6 +24,7 @@ def driver():
     options = Options()
     # options.add_argument("--headless=new")  # uncomment for CI/headless runs
     options.add_argument("--window-size=1920,1080")
+    options.set_capability("goog:loggingPrefs", {"browser": "ALL"})
 
     service = Service(ChromeDriverManager().install())
     drv = webdriver.Chrome(service=service, options=options)
